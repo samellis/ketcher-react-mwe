@@ -62,3 +62,49 @@ import "ketcher-react/dist/index.css";
 ```
 
 
+### Interactivity
+Need to add the following to the editor:
+```
+onInit={(ketcher) => {
+        window.ketcher = ketcher;
+        window.parent.postMessage(
+          {
+            eventType: 'init',
+          },
+          '*',
+        );
+      }}
+```
+
+And for this to work we need to create src/typing.d.ts:
+
+```
+import { Ketcher } from 'ketcher-core';
+
+declare global {
+  export interface Window {
+    ketcher?: Ketcher;
+  }
+}
+```
+
+Also, change to use the standalone service provider:
+
+```
+import { StandaloneStructServiceProvider as StandaloneStructServiceProviderType } from 'ketcher-standalone';
+
+const StandaloneStructServiceProvider =
+  StandaloneStructServiceProviderType as unknown as new () => any;
+
+const structServiceProvider = new StandaloneStructServiceProvider();
+```
+
+Now we can interact:
+
+```
+function handleClick(){
+  window.ketcher.getSmiles().then(result => console.log(result));
+}
+
+<button onClick={handleClick}>Get Smiles</button>
+```
